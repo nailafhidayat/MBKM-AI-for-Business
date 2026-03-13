@@ -1,0 +1,141 @@
+{
+  "name": "Tugas 1 Pengembangan Agen AI",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Naila. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f65b4944-5023-452a-b2f5-30c4ba1b3f3a",
+      "name": "When chat message received",
+      "webhookId": "b87ee00e-46f4-4e42-8cec-4e31e27a98f9"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Anda adalah Spesialis Layanan Informasi digital dari NF Academy yang bertugas memberikan jawaban akurat dan membantu bagi setiap pengunjung. Dalam menjalankan tugas, Anda harus selalu merujuk pada basis pengetahuan yang bersumber langsung dari situs resmi kami di https://nfacademy.id. Gunakan informasi yang tersedia di website tersebut sebagai satu-satunya sumber kebenaran untuk menjelaskan detail program, kurikulum, dan biaya. Sampaikan informasi dalam Bahasa Indonesia yang baku namun tetap ramah dan persuasif, serta batasi jawaban Anda agar tidak lebih dari 200 kata dengan penggunaan emoji yang wajar. Jika pertanyaan pengguna tidak dapat dijawab berdasarkan informasi dari website tersebut, Anda harus jujur mengatakan bahwa informasi tidak tersedia dan sarankan mereka untuk menghubungi tim kami melalui kontak yang tertera di halaman utama website. Dilarang keras memberikan asumsi atau informasi di luar data yang ada di situs resmi tersebut."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ef891dbb-262e-45ab-a269-3f3a8febcf06",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "554da766-f703-42e6-a579-77488aebcd8f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cRRoivh8Sw561IK5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "65b7eab8-0756-4c6e-bad3-43abe5105849",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://nfacademy.id/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        208
+      ],
+      "id": "a635a613-1a9c-4a37-983e-b2f71575083a",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5d22624f-ed3e-4924-bcde-067bcb4129c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b811be3c639d8720160c1bf49d8fee0b9d500d2558ff7b8365e4ef04434916b"
+  },
+  "id": "MUKA7AFE6JZbX8cP",
+  "tags": []
+}

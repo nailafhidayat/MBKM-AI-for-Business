@@ -1,0 +1,471 @@
+{
+  "name": "Tugas 8 - AI Keuangan",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        784,
+        -112
+      ],
+      "id": "38c16db3-8a7e-48f9-b5f2-b76be798afc0",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "8q7s9XtfQxyt4Wj5",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "groq/compound",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        912,
+        192
+      ],
+      "id": "80276545-6270-49c5-93b2-4df55e1decef",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "8q7s9XtfQxyt4Wj5",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        304
+      ],
+      "id": "2a10cd27-c2f0-49f4-8ab6-1cc1c512e01c",
+      "name": "Schedule Trigger 7am"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the sentiment of the following Data. Respond ONLY with ONE word: 'Positive', 'Negative', or 'Neutral'.\n\nData:\n{{ $json.sentiment }}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        608,
+        0
+      ],
+      "id": "4bd75367-9d13-4f3e-a9b7-16eb7836f343",
+      "name": "Analisis Sentimen"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Anda adalah seorang analis sentimen media sosial.\nTuliskan kesimpulan singkat (dalam bahasa Indonesia) untuk laporan Telegram, berdasarkan data berikut:\n\n- Bullish: {{ $json.bullish }}\n- Bearish: {{ $json.bearish }}\n- Neutral: {{ $json.neutral }}\n\nBerikan ringkasan singkat tentang apa arti angka-angka ini (misalnya, \"Sentimen hari ini cenderung positif,\" \"Ada banyak keraguan di pasar,\" dll.).",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        304
+      ],
+      "id": "5d50de70-d60e-4721-be1e-93f87e23c46e",
+      "name": "Membuat Kesimpulan"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1db49ea1-6b82-44bc-9446-700f4fd372fe",
+      "name": "Schedule Trigger 15 Minutes"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo",
+          "mode": "list",
+          "cachedResultName": "$BTC dan $ETH Sentimen Media Sosial",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data Mentah",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "coin": "={{ $('Code in JavaScript').item.json.coin }}",
+            "total": "={{ $('Code in JavaScript').item.json.total }}",
+            "bullish": "={{ $('Code in JavaScript').item.json.bullish }}",
+            "bearish": "={{ $('Code in JavaScript').item.json.bearish }}",
+            "neutral": "={{ $('Code in JavaScript').item.json.neutral }}",
+            "sentiment": "={{ $('Code in JavaScript').item.json.sentiment }}",
+            "scraped_at": "={{ $('Code in JavaScript').item.json.scraped_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "coin",
+              "displayName": "coin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bullish",
+              "displayName": "bullish",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bearish",
+              "displayName": "bearish",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "neutral",
+              "displayName": "neutral",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "scraped_at",
+              "displayName": "scraped_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        0
+      ],
+      "id": "392436c3-5963-4ad7-9252-9b2f8ed31fdb",
+      "name": "Penyimpanan Hasil",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0utxhVKnBDpDFDX6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo",
+          "mode": "list",
+          "cachedResultName": "$BTC dan $ETH Sentimen Media Sosial",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Data Mentah",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cBkrxU9qNPR-PNLKtgztQ7eYH049YYq3AsIPGuBGJOo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        304
+      ],
+      "id": "a210af4e-1fd6-4623-aa29-83dd67a64209",
+      "name": "Baca Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0utxhVKnBDpDFDX6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const bullish = item.json.bullish;\n  const bearish = item.json.bearish;\n  const neutral = item.json.neutral;\n\n  let sentiment = '';\n\n  if (bullish > bearish && bullish > neutral) {\n    sentiment = 'Positive';\n  } else if (bearish > bullish && bearish > neutral) {\n    sentiment = 'Negative';\n  } else {\n    sentiment = 'Neutral';\n  }\n\n  return {\n    json: {\n      ...item.json,\n      sentiment: sentiment\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        304
+      ],
+      "id": "7bf715f7-18f1-47f0-ab62-6f42ba3c595f",
+      "name": "Analisis Data"
+    },
+    {
+      "parameters": {
+        "chatId": "1469962490",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        304
+      ],
+      "id": "3a51b548-8f87-4b71-b3fe-246a98a97795",
+      "name": "Kirim Laporan",
+      "webhookId": "162cf1cd-3eb5-461a-9b1d-cdf9de37defe",
+      "credentials": {
+        "telegramApi": {
+          "id": "RkJq6WMNnpTZd6o0",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ac62055-2292-43cd-8d9b-a7bf40a8018e",
+              "name": "BTC",
+              "value": "={\n    \"total\": 98,\n    \"bullish\": 40,\n    \"bearish\": 32,\n    \"neutral\": 26,\n    \"avg_compound\": 0.032,\n    \"signal\": \"NEUTRAL\",\n    \"scraped_at\": \"2026-04-22T20:20:50.120146\"\n}",
+              "type": "object"
+            },
+            {
+              "id": "0bd41140-0d35-4970-b382-e90b3535dda2",
+              "name": "ETH",
+              "value": "={\n    \"total\": 61,\n    \"bullish\": 24,\n    \"bearish\": 26,\n    \"neutral\": 11,\n    \"avg_compound\": -0.0307,\n    \"signal\": \"NEUTRAL\",\n    \"scraped_at\": \"2026-04-22T20:20:50.120637\"\n}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1f184eb7-2ccb-420a-8e45-1634e7b1d427",
+      "name": "Data Scraping"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      coin: \"BTC\",\n      total: $input.first().json.BTC.total,\n      bullish: $input.first().json.BTC.bullish,\n      bearish: $input.first().json.BTC.bearish,\n      neutral: $input.first().json.BTC.neutral,\n      sentiment: $input.first().json.BTC.signal,\n      scraped_at: $input.first().json.BTC.scraped_at\n    }\n  },\n  {\n    json: {\n      coin: \"ETH\",\n      total: $input.first().json.ETH.total,\n      bullish: $input.first().json.ETH.bullish,\n      bearish: $input.first().json.ETH.bearish,\n      neutral: $input.first().json.ETH.neutral,\n      sentiment: $input.first().json.ETH.signal,\n      scraped_at: $input.first().json.ETH.scraped_at\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "01c7e40f-a84b-45ce-964c-7f4ca8976f32",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analisis Sentimen",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Membuat Kesimpulan",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger 7am": {
+      "main": [
+        [
+          {
+            "node": "Baca Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisis Sentimen": {
+      "main": [
+        [
+          {
+            "node": "Penyimpanan Hasil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Membuat Kesimpulan": {
+      "main": [
+        [
+          {
+            "node": "Kirim Laporan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Data Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baca Data": {
+      "main": [
+        [
+          {
+            "node": "Analisis Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisis Data": {
+      "main": [
+        [
+          {
+            "node": "Membuat Kesimpulan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Scraping": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Analisis Sentimen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0a692932-d202-4546-9d4f-48224079b9f6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b811be3c639d8720160c1bf49d8fee0b9d500d2558ff7b8365e4ef04434916b"
+  },
+  "id": "9DyS2kZhFLZOsoHm",
+  "tags": []
+}

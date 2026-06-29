@@ -1,0 +1,456 @@
+{
+  "name": "Final Project",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.fileId }}"
+        },
+        "options": {}
+      },
+      "id": "1589f75a-ccf8-4241-abcd-f2a10219597b",
+      "name": "Download PDF",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        528,
+        16
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Ou4zYm79VYER1SbC",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "0b3e986a-6a44-44ec-834c-830eb7172bdd",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        752,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.flatMap((inputItem, index) => {\n  const raw = inputItem.json.text;\n\n  const clean = raw\n    .replace(/```json/g, '')\n    .replace(/```/g, '')\n    .trim();\n\n  const jsonStart = clean.indexOf('{');\n  const jsonEnd = clean.lastIndexOf('}') + 1;\n  const jsonString = clean.slice(jsonStart, jsonEnd);\n  const parsed = JSON.parse(jsonString);\n\n  const nama_client = parsed.nama_client;\n  const nomor_kontrak = parsed.nomor_kontrak;\n  const total_nilai_kontrak = parsed.total_nilai_kontrak;\n\n  // ✅ Ambil fileId sesuai index item\n  const fileId = $('Limit').all()[index].json.fileId;\n\n  return parsed.termin.map(item => ({\n    json: {\n      nama_client,\n      nomor_kontrak,\n      total_nilai_kontrak,\n      nama_termin: item.nama,\n      persentase: item.persentase,\n      nominal: item.nominal,\n      tanggal_target: item.tanggal_target,\n      status: 'Pending',\n      fileId\n    }\n  }));\n});"
+      },
+      "id": "2197c48f-9025-43a8-9c50-422573c2040e",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA",
+          "mode": "list",
+          "cachedResultName": "Form Input Kontrak Kerja Sama PT Glory (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 231505127,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA/edit#gid=231505127"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nama Client": "={{ $json.nama_client }}",
+            "Nomor Kontrak": "={{ $json.nomor_kontrak }}",
+            "Total Kontrak": "={{ $json.total_nilai_kontrak }}",
+            "Nama Termin": "={{ $json.nama_termin }}",
+            "Persentase": "={{ $json.persentase }}",
+            "Nominal": "={{ $json.nominal }}",
+            "Tanggal Target": "={{ $json.tanggal_target }}",
+            "Status": "={{ $json.status }}",
+            "File ID": "={{ $json.fileId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nama Client",
+              "displayName": "Nama Client",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nomor Kontrak",
+              "displayName": "Nomor Kontrak",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Kontrak",
+              "displayName": "Total Kontrak",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nama Termin",
+              "displayName": "Nama Termin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Persentase",
+              "displayName": "Persentase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nominal",
+              "displayName": "Nominal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal Target",
+              "displayName": "Tanggal Target",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File ID",
+              "displayName": "File ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "dce93045-28b7-4cfe-a553-295027596400",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1536,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0utxhVKnBDpDFDX6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nanaila198@gmail.com",
+        "subject": "=Approval Pembayaran Termin Kontrak – {{ $json['Nama Client'] }}",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n</head>\n\n<body style=\"font-family: Arial, sans-serif; background-color:#f4f6f8; padding:20px;\">\n\n  <div style=\"max-width:600px; margin:auto; background:#ffffff; border-radius:10px; padding:30px; border:1px solid #e0e0e0;\">\n\n    <h2 style=\"color:#1f2937; margin-bottom:10px;\">\n      Approval Pembayaran Kontrak\n    </h2>\n\n    <p style=\"color:#4b5563; font-size:14px;\">\n      Kepada Yth. <b>Manager Finance</b>,\n    </p>\n\n    <p style=\"color:#4b5563; line-height:1.6;\">\n      Terdapat pengajuan pembayaran termin kontrak kerja sama yang memerlukan proses review dan approval dari tim Finance.\n    </p>\n\n    <div style=\"background:#f9fafb; border:1px solid #d1d5db; border-radius:8px; padding:20px; margin-top:20px;\">\n\n      <h3 style=\"margin-top:0; color:#111827;\">\n        Detail Kontrak\n      </h3>\n\n      <table style=\"width:100%; border-collapse:collapse; font-size:14px;\">\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Perusahaan</td>\n          <td style=\"padding:8px 0;\"><b>PT Glory</b></td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Nomor Kontrak</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Nomor Kontrak'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Nama Client</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Nama Client'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Total Nilai Kontrak</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Total Kontrak'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Termin Pembayaran</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Nama Termin'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Persentase</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Persentase'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Nominal Pembayaran</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Nominal'] }}\n          </td>\n        </tr>\n\n        <tr>\n          <td style=\"padding:8px 0; color:#6b7280;\">Target Pembayaran</td>\n          <td style=\"padding:8px 0;\">\n            {{ $json['Tanggal Target'] }}\n          </td>\n        </tr>\n\n      </table>\n    </div>\n\n    <p style=\"margin-top:25px; color:#4b5563; line-height:1.6;\">\n      Mohon untuk melakukan pengecekan dokumen pendukung dan memberikan persetujuan pembayaran sesuai jadwal yang telah ditentukan.\n    </p>\n\n    <div style=\"margin-top:30px; text-align:center;\">\n\n      <a \n        href=\"https://drive.google.com/file/d/{{ $json['File ID'] }}/view\"\n        target=\"_blank\"\n        style=\"background:#2563eb; color:white; text-decoration:none; padding:12px 24px; border-radius:6px; display:inline-block;\"\n      >\n        Lihat Dokumen Kontrak\n      </a>\n\n    </div>\n\n    <hr style=\"margin:30px 0; border:none; border-top:1px solid #e5e7eb;\">\n\n    <p style=\"font-size:12px; color:#9ca3af; text-align:center;\">\n      Email ini dibuat otomatis oleh Finance Automation System – PT Glory\n    </p>\n\n  </div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        16
+      ],
+      "id": "97a90294-7d4b-453d-a617-c1f2f74eb7eb",
+      "name": "Send a message",
+      "webhookId": "8869845e-4d52-4eef-88b6-1aecc9e571c8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "60llXnlA9oGeU6zc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        192
+      ],
+      "id": "59bc0180-9e86-4491-9846-27694b7d37c6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "8q7s9XtfQxyt4Wj5",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Anda adalah AI Contract Parser.\n\nAnalisis dokumen kontrak berikut:\n\n{{ $json.text }}\n\nEkstrak informasi berikut dan WAJIB output dalam format JSON VALID.\n\nFormat output:\n\n```json\n{\n  \"nama_client\": \"\",\n  \"nomor_kontrak\": \"\",\n  \"total_nilai_kontrak\": \"\",\n  \"tanggal_mulai\": \"\",\n  \"tanggal_selesai\": \"\",\n  \"termin\": [\n    {\n      \"nama\": \"\",\n      \"persentase\": \"\",\n      \"nominal\": \"\",\n      \"tanggal_target\": \"\"\n    }\n  ]\n}\n```\n\nAturan:\n\n* Output HARUS JSON VALID\n* Jangan beri penjelasan tambahan\n* Jangan gunakan markdown\n* Jangan gunakan kata pembuka\n* Jangan gunakan ```json\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        976,
+        16
+      ],
+      "id": "3de7f6ad-58d8-41ca-951e-b65d21e3b6b3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "11ac3654-cddd-4974-a987-859d1c1c07e7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA",
+          "mode": "list",
+          "cachedResultName": "Form Input Kontrak Kerja Sama PT Glory (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2140841118,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rMa_s5OFu0ndOFibIV_TCRydo_bnrq4G9gTHvO9hncA/edit#gid=2140841118"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        208
+      ],
+      "id": "fae6db25-d6ca-44a7-838c-688d3c6e1291",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0utxhVKnBDpDFDX6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n\n  // Ambil link dari Google Sheets\n  const fileUrl = item.json[\"Bukti Kontrak Pembayaran\"];\n\n  let fileId = '';\n\n  // Format:\n  // https://drive.google.com/file/d/FILE_ID/view\n  const match1 = fileUrl.match(/\\/d\\/([a-zA-Z0-9_-]+)/);\n\n  // Format:\n  // https://drive.google.com/open?id=FILE_ID\n  const match2 = fileUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);\n\n  if (match1 && match1[1]) {\n    fileId = match1[1];\n  } else if (match2 && match2[1]) {\n    fileId = match2[1];\n  }\n\n  // Buat link view Google Drive\n  const driveLink = `$input.first().json['Bukti Kontrak Pembayaran']`;\n\n  return {\n    json: {\n      ...item.json,\n      fileId,\n      driveLink\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        208
+      ],
+      "id": "6dd9e12c-f691-4a44-8ffd-0bbc34ffcf34",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        720,
+        208
+      ],
+      "id": "98686a1e-8bea-4a12-9c57-c07b687a2159",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f1312267-e566-4dbf-8de8-be5495ce2403",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b811be3c639d8720160c1bf49d8fee0b9d500d2558ff7b8365e4ef04434916b"
+  },
+  "nodeGroups": [],
+  "id": "Mkx9UruBBh1D60DP",
+  "tags": []
+}
